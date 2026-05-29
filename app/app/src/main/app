@@ -1,0 +1,33 @@
+package com.arraiyan.sosguard;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.os.Bundle;
+import android.widget.Toast;
+
+public class MainActivity extends Activity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.BLUETOOTH_CONNECT, android.Manifest.permission.BLUETOOTH_SCAN}, 1);
+            }
+        }
+
+        Intent serviceIntent = new Intent(this, SOSBackgroundService.class);
+        serviceIntent.putExtra("emergency_number", "01704100288");
+        
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(serviceIntent);
+        } else {
+            startService(serviceIntent);
+        }
+
+        Toast.makeText(this, "Ar Raiyan SOS Guard Activated Background Service", Toast.LENGTH_LONG).show();
+        finish();
+    }
+}
